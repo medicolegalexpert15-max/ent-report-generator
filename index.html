@@ -1,10 +1,11 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="UTF-8">
-<title>ENT Medico‑Legal Report Generator v2</title>
+<title>ENT Medico‑Legal Report Generator v3</title>
 <style>
 body{font-family:Arial;margin:40px;background:#eef2f7}
-.container{background:white;padding:30px;border-radius:12px;max-width:1000px;margin:auto}
+.container{background:white;padding:30px;border-radius:12px;max-width:1100px;margin:auto}
 h1{margin-top:0}
 h2{border-bottom:1px solid #ddd;padding-bottom:4px}
 label{font-weight:bold}
@@ -13,12 +14,35 @@ textarea{height:70px}
 button{padding:12px 20px;font-size:16px;margin-right:10px}
 .section{margin-top:25px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+table{width:100%;border-collapse:collapse}
+td,th{border:1px solid #ccc;padding:6px;text-align:center}
 small{color:#666}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>ENT Medico‑Legal Report Generator (CPR Part 35)</h1><div class="section">
+<h1>ENT Medico‑Legal Report Generator (Version 3 – CPR Part 35)</h1>
+
+<div class="section">
+<h2>Solicitor / Instructions</h2>
+<label>Solicitor / Firm</label>
+<input id="solicitor">
+<label>Agency</label>
+<input id="agency">
+<label>Solicitor Reference</label>
+<input id="ref">
+<label>Examination Venue</label>
+<select id="venue">
+<option>Chamberlain Clinic Birmingham</option>
+<option>Calderbank Medical Chambers Manchester</option>
+<option>Westend Medical Practice London</option>
+<option>Premier Inn Manchester Meeting Rooms</option>
+</select>
+<label>Date of Examination</label>
+<input id="examDate">
+</div>
+
+<div class="section">
 <h2>Claimant Details</h2>
 <label>Name</label>
 <input id="name">
@@ -28,186 +52,163 @@ small{color:#666}
 <textarea id="address"></textarea>
 <label>Occupation</label>
 <input id="occupation">
-</div><div class="section">
-<h2>Solicitor / Instructions</h2>
-<label>Solicitor / Firm</label>
-<input id="solicitor">
-<label>Date of Instruction</label>
-<input id="instructionDate">
-<label>Documents Reviewed</label>
-<textarea id="documents"></textarea>
-</div><div class="section">
+<label>Contact Number</label>
+<input id="phone">
+</div>
+
+<div class="section">
 <h2>Accident Details</h2>
 <label>Date of RTA</label>
 <input id="rta">
-<label>Role in Accident</label>
+<label>Role</label>
 <select id="role">
 <option>Driver</option>
 <option>Passenger</option>
 <option>Pedestrian</option>
-<option>Cyclist</option>
 </select>
-<label>Mechanism of Injury</label>
+<label>Accident Description</label>
 <textarea id="mechanism"></textarea>
-</div><div class="section">
+</div>
+
+<div class="section">
 <h2>Current Symptoms</h2>
 <input type="checkbox" id="tinnitus"> Tinnitus<br>
 <input type="checkbox" id="hearing"> Hearing Loss<br>
 <input type="checkbox" id="dizziness"> Dizziness / Vertigo<br>
-<input type="checkbox" id="imbalance"> Imbalance<br>
-<input type="checkbox" id="headache"> Headaches<br>
-<input type="checkbox" id="nasal"> Nasal Injury / Obstruction
-</div><div class="section">
-<h2>Past Medical / ENT History</h2>
-<textarea id="pmh" placeholder="Previous ENT disease, migraine, prior hearing loss etc"></textarea>
-</div><div class="section">
-<h2>Ear Examination</h2>
-<select id="earExam">
-<option>External auditory canals and tympanic membranes normal</option>
-<option>Wax present</option>
-<option>Tympanic membrane perforation</option>
-<option>Middle ear effusion suspected</option>
-</select>
-</div><div class="section">
-<h2>Audiology</h2>
-<div class="row">
-<div>
-<label>Audiogram Result</label>
-<select id="audio">
-<option>Normal hearing thresholds</option>
-<option>Mild high frequency sensorineural hearing loss</option>
-<option>Moderate sensorineural hearing loss</option>
-<option>Asymmetric hearing loss</option>
-</select>
+<input type="checkbox" id="headache"> Headache<br>
+<input type="checkbox" id="nasal"> Nasal Injury
 </div>
-<div>
-<label>Tympanogram</label>
-<select id="tymp">
-<option>Type A (Normal)</option>
-<option>Type B</option>
-<option>Type C</option>
-</select>
-</div>
-</div><label>Audiogram Image (optional)</label> <input type="file" id="audiogramFile">
 
-<label>Tympanogram Image (optional)</label> <input type="file" id="tympFile">
-
-</div><div class="section">
-<h2>Vestibular Examination</h2>
-<select id="vest">
-<option>Normal vestibular examination</option>
-<option>Positive head impulse test</option>
-<option>Romberg positive</option>
-<option>Imbalance on Fukuda stepping test</option>
-</select>
-</div><div class="section">
-<h2>Prognosis</h2>
-<select id="prognosis">
-<option>Symptoms likely to improve over several months</option>
-<option>Tinnitus may persist long term</option>
-<option>Vestibular rehabilitation may be beneficial</option>
-<option>Nasal obstruction may require surgical assessment</option>
-</select>
-</div><div class="section">
-<button onclick="generateReport()">Generate Word Report</button>
-<button onclick="saveCase()">Save Case</button>
-<button onclick="loadCase()">Load Last Case</button>
-<small>Cases are saved locally in your browser.</small>
+<div class="section">
+<h2>THI Score Calculator</h2>
+<label>Yes answers</label>
+<input id="thiYes" type="number">
+<label>Sometimes answers</label>
+<input id="thiSometimes" type="number">
+<label>No answers</label>
+<input id="thiNo" type="number">
+<button onclick="calculateTHI()">Calculate THI</button>
+<p id="thiResult"></p>
 </div>
-</div><script>
+
+<div class="section">
+<h2>Pure Tone Audiometry (dB)</h2>
+<table>
+<tr>
+<th>Frequency</th>
+<th>Right</th>
+<th>Left</th>
+</tr>
+<tr><td>1000 Hz</td><td><input id="r1"></td><td><input id="l1"></td></tr>
+<tr><td>2000 Hz</td><td><input id="r2"></td><td><input id="l2"></td></tr>
+<tr><td>3000 Hz</td><td><input id="r3"></td><td><input id="l3"></td></tr>
+<tr><td>4000 Hz</td><td><input id="r4"></td><td><input id="l4"></td></tr>
+</table>
+<button onclick="calcHL()">Calculate Hearing Loss</button>
+<p id="hlResult"></p>
+</div>
+
+<div class="section">
+<h2>Management Recommendation</h2>
+<select id="management">
+<option>Hearing aid trial recommended</option>
+<option>Tinnitus masking device recommended</option>
+<option>Tinnitus retraining therapy recommended</option>
+<option>Combination therapy recommended</option>
+</select>
+</div>
+
+<div class="section">
+<button onclick="generateReport()">Generate Full Report</button>
+</div>
+</div>
+
+<script>
+
 function collectSymptoms(){
 let s=[]
 if(tinnitus.checked) s.push('tinnitus')
 if(hearing.checked) s.push('hearing loss')
 if(dizziness.checked) s.push('dizziness')
-if(imbalance.checked) s.push('imbalance')
-if(headache.checked) s.push('headaches')
+if(headache.checked) s.push('headache')
 if(nasal.checked) s.push('nasal symptoms')
 return s.join(', ')
 }
 
-function opinionText(symptoms,audio){
-let text=""
-if(symptoms.includes('tinnitus')){
-text += "The claimant reports tinnitus following the road traffic accident. "
+function calculateTHI(){
+let yes=parseInt(thiYes.value||0)
+let sometimes=parseInt(thiSometimes.value||0)
+let no=parseInt(thiNo.value||0)
+let score=(yes*4)+(sometimes*2)+(no*0)
+let grade=""
+
+if(score<=16) grade="Slight"
+else if(score<=36) grade="Mild"
+else if(score<=56) grade="Moderate"
+else if(score<=76) grade="Severe"
+else grade="Catastrophic"
+
+thiResult.innerText="THI Score: "+score+" / 100 — Severity: "+grade
 }
-if(audio.includes('sensorineural')){
-text += "Audiometry demonstrates sensorineural hearing loss which may be consistent with acoustic or concussive injury. "
-}
-if(symptoms.includes('dizziness') || symptoms.includes('imbalance')){
-text += "Vestibular symptoms following minor head trauma are recognised and usually improve over time. "
-}
-if(symptoms.includes('nasal')){
-text += "Nasal trauma during the accident may account for the reported nasal obstruction. "
-}
-text += "On the balance of probabilities the symptoms described are consistent with injuries sustained in the accident."
-return text
+
+function calcHL(){
+let r=(Number(r1.value)+Number(r2.value)+Number(r3.value)+Number(r4.value))/4
+let l=(Number(l1.value)+Number(l2.value)+Number(l3.value)+Number(l4.value))/4
+let binaural=(r+l)/2
+
+hlResult.innerText="Average Right Ear: "+r.toFixed(1)+" dB | Left Ear: "+l.toFixed(1)+" dB | Binaural: "+binaural.toFixed(1)+" dB"
 }
 
 function generateReport(){
 let symptoms=collectSymptoms()
-let audio=audioResult= document.getElementById('audio').value
-let opinion=opinionText(symptoms,audio)
 
 let text=`
 ENT MEDICO‑LEGAL REPORT (CPR PART 35)
 
 Expert: Mr Shehzad Ghaffar FCPS FRCS
-ENT Specialist
-Mid Cheshire NHS Foundation Trust, Crewe
+ENT Specialist – Mid Cheshire NHS Foundation Trust
 
-Clinic Venues:
-• Chamberlain Clinic, 81 Harborne Road, Birmingham B15 3HG
-• Calderbank Medical Chambers, 599 Wilmslow Rd, Manchester M20 3QD
-• Westend Medical Practice, 6 Bendall Mews, London NW1 6SN
+INSTRUCTED BY
+${solicitor.value} via ${agency.value}
+Reference: ${ref.value}
 
-----------------------------------------
-INSTRUCTIONS RECEIVED
-Solicitor: ${solicitor.value}
-Date of Instruction: ${instructionDate.value}
-Documents Reviewed: ${documents.value}
+EXAMINATION VENUE
+${venue.value}
 
-----------------------------------------
+DATE OF EXAMINATION
+${examDate.value}
+
 CLAIMANT DETAILS
 Name: ${name.value}
 DOB: ${dob.value}
 Address: ${address.value}
 Occupation: ${occupation.value}
+Contact: ${phone.value}
 
-----------------------------------------
 ACCIDENT DETAILS
-Date of Accident: ${rta.value}
+Date of RTA: ${rta.value}
 Role: ${role.value}
-Mechanism: ${mechanism.value}
+Description: ${mechanism.value}
 
-----------------------------------------
 CURRENT SYMPTOMS
 The claimant reports ${symptoms} following the accident.
 
-----------------------------------------
-PAST MEDICAL HISTORY
-${pmh.value}
+THI RESULT
+${thiResult.innerText}
 
-----------------------------------------
-EXAMINATION
-Ear examination: ${earExam.value}
-Audiogram: ${audio}
-Tympanogram: ${tymp.value}
-Vestibular examination: ${vest.value}
+HEARING LOSS CALCULATION
+${hlResult.innerText}
 
-----------------------------------------
+MANAGEMENT
+${management.value}
+
 OPINION
-${opinion}
+On the balance of probabilities the claimant's symptoms are consistent with audio‑vestibular injury sustained during the index road traffic accident.
 
-----------------------------------------
-PROGNOSIS
-${prognosis.value}
-
-----------------------------------------
 STATEMENT OF TRUTH
-I confirm that I have made clear which facts and matters referred to in this report are within my own knowledge and which are not. I understand that my duty is to the Court and that this duty overrides any obligation to the party from whom I have received instructions.
+I confirm that I understand my duty to the Court and that this duty overrides any obligation to the party instructing me. The opinions expressed represent my true and complete professional opinion.
 
-Signed:
+Signed
 Mr Shehzad Ghaffar FCPS FRCS
 `
 
@@ -218,25 +219,7 @@ link.download="ENT_MedicoLegal_Report.doc"
 link.click()
 }
 
-function saveCase(){
-let data={}
-document.querySelectorAll('input, textarea, select').forEach(el=>{
-if(el.type==='checkbox') data[el.id]=el.checked
-else data[el.id]=el.value
-})
-localStorage.setItem('entCase',JSON.stringify(data))
-alert('Case saved')
-}
+</script>
 
-function loadCase(){
-let data=JSON.parse(localStorage.getItem('entCase')||'{}')
-for(let id in data){
-let el=document.getElementById(id)
-if(!el) continue
-if(el.type==='checkbox') el.checked=data[id]
-else el.value=data[id]
-}
-alert('Last saved case loaded')
-}
-</script></body>
+</body>
 </html>
