@@ -162,6 +162,14 @@ hlResult.innerText="Average Right Ear: "+r.toFixed(1)+" dB | Left Ear: "+l.toFix
 function generateReport(){
 let symptoms=collectSymptoms()
 
+let accidentParagraph = `
+According to the history provided, the claimant reports that they were involved in a road traffic accident on ${rta.value}. 
+At the time of the incident the claimant was travelling as a ${role.value}. 
+The circumstances of the accident have been described as follows: ${mechanism.value}. 
+Following this incident the claimant reports the onset of ${symptoms}. 
+The claimant indicates that these symptoms were not present prior to the accident and have persisted to varying degrees since the event.
+`
+
 let text=`
 ENT MEDICO‑LEGAL REPORT (CPR PART 35)
 
