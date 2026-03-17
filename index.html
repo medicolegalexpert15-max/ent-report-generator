@@ -72,6 +72,32 @@ white-space:pre-line;
 <option>Taxi passenger</option>
 </select>
 
+<label>Gender</label>
+<select id="gender">
+<option value="">Select</option>
+<option>He</option>
+<option>She</option>
+
+<label>TIme of the Day</label>
+<select id="daytime">
+<option value="">Select</option>
+<option>morning</option>
+<option>afternoon</option> 
+<option>evening</option>
+<option>night</option>
+<option>mid night</option>
+<option>early morning</option>
+  
+<label>TIme of the Day</label>
+<select id="daytime">
+<option value="">Select</option>
+<option>morning</option>
+<option>afternoon</option> 
+<option>evening</option>
+<option>night</option>
+<option>mid night</option>
+<option>early morning</option>  
+
 <label>Mechanism of Injury</label>
 <select id="mechanism">
 <option value="">Select</option>
@@ -112,8 +138,8 @@ let report=`
 ACCIDENT DETAILS
 
 According to the history provided, ${name} was involved in a road traffic accident on ${date}. 
-At the time of the incident the claimant was travelling as a ${role}. 
-The mechanism of the accident has been described as follows: ${mechanism}.
+On the day of the accident, in the ${time of the day}, which was ${weather}, with ${vision} visibility, the claimant was travelling in the vehicle as a ${role}. 
+The claimannt's vehicle was ${movement}: ${mechanism}.
 
 CLINICAL SYMPTOMS
 
